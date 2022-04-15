@@ -1,11 +1,19 @@
 {
     "compilerOptions": {
+      "baseUrl": ".",
       "lib": ["es5", "es6", "dom"],
       "target": "es5",
       "module": "commonjs",
       "moduleResolution": "node",
       "emitDecoratorMetadata": true,
-      "experimentalDecorators": true
-    }
+      "experimentalDecorators": true,
+      "paths": {
+        "@/helper/*": ["./src/helper/*"],
+      }
+    },
+    "include": [
+      "./src",
+      "./server"
+  ],
   }
   
