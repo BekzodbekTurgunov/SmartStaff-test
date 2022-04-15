@@ -1,19 +1,21 @@
 generator client {
-   provider        = "prisma-client-js"
- }
- 
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model UserCredential {
-  id         String   @unique @default(cuid())
-  email      String   @unique
-  password   String
-  isVerified Boolean  @default(false)
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("udpated_at")
+  id               String   @unique @default(cuid())
+  email            String   @unique
+  password         String
+  isVerified       Boolean  @default(false)
+  verificationCode String
+  invalidAttempts  Int      @default(0)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("udpated_at")
 }
 
 model User {
@@ -22,6 +24,8 @@ model User {
   firstName String?
   lastName  String?
   chat      Chat[]
+  userType  UserType  @default(value: USER)
+  role      UserRole  @default(value: USER)
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("udpated_at")
   Message   Message[]
@@ -49,4 +53,16 @@ model Chat {
   receiver   User?     @relation("ReceiverChat", fields: [receiverId], references: [id])
   senderId   String?
   receiverId String?
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum UserType {
+  USER
+  ADMIN
+  MANAGER
+  SUPERUSER
 }

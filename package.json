@@ -13,9 +13,9 @@
   "directories": {
     "lib": "lib"
   },
-   "prisma": {
-        "seed": "dotenv -e .env node prisma/seed.js"
-    },
+  "prisma": {
+    "seed": "dotenv -e .env node prisma/seed.js"
+  },
   "devDependencies": {
     "@types/cors": "^2.8.12",
     "@types/dotenv": "^8.2.0",
@@ -28,8 +28,10 @@
   },
   "dependencies": {
     "@prisma/client": "^3.12.0",
+    "@sendgrid/mail": "^7.6.2",
     "cors": "^2.8.5",
     "dotenv": "^14.3.2",
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "md5": "^2.3.0"
   }
 }
