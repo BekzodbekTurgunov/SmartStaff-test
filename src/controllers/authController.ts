@@ -1,24 +1,25 @@
 import {Request, Response} from 'express'
-import {getUserByEmail, getUserById, userVerification} from '../helper/apiHelper'
+import {userLogin, userVerification} from '../helper/apiHelper'
 
 export const login = async (req: Request, res: Response) => {
+    const {email, password} = req.body
+    if (!email || !password) {
+        return res.status(400).json({
+            success: false,
+            message: 'Please enter all fields'
+        })
+    }
     try {
-        const {email, password} = req.body
-        const user = await getUserByEmail(email)
-        if (!user) {
-            return res.status(400).json({
+        const result = await userLogin(email, password)
+        if(result.status !== 200) {
+            return res.status(result.status).json({
                 message: 'Invalid email or password'
             })
         }
-        const isMatch = password === user.password
-        if (!isMatch) {
-            return res.status(400).json({
-                message: 'Invalid email or password'
-            })
-        }
-        const token = user.generateToken()
-        res.json({
-            token
+        const user = result.user
+        return res.status(200).json({
+            message: 'Login successful',
+            user
         })
     } catch (e) {
         res.status(500).json({
@@ -28,7 +29,7 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const verification = async (req: Request, res: Response) => {
-    const {userId, verificationCode } = req.body
+    const {userId, verificationCode} = req.body
     if (!userId || !verificationCode) {
         return res.status(400).json({
             message: 'Invalid request'

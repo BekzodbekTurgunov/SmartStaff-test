@@ -51,11 +51,7 @@ export const createUser = async (body) => {
 }
 
 export const userVerification = async (userId, verificationCode) => {
-    const userCredential = await prisma.userCredential.findUnique({
-        where: {
-            id:userId,
-        }
-    })
+    const userCredential = await getUserById(userId)
     if (!userCredential) {
         return{
             status:404,
@@ -104,6 +100,33 @@ export const getUserById = async (id) => {
     return user
 }
 
+export const userLogin = async (email, password) => {
+    const userCredential = await getUserByEmail(email)
+    if (!userCredential) {
+        return{
+            status:404,
+            message: "User not found"
+        }
+    }
+    if(!userCredential.isVerified){
+        return{
+            status:400,
+            message: "User not verified"
+        }
+    }
+    if (userCredential.password !== md5(password)) {
+        return {
+            status:400,
+            message: "Password is not correct"
+        }
+    }
+    const user = await getUserByEmail(email)
+    return {
+        status:200,
+        message: "User verified",
+        user
+    }
+}
 
 async function sendVerification(email:string, code:string, userId:string, password:string) {
     const url = process.env.PROJECT_URL
