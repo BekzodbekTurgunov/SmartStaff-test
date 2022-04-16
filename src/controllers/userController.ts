@@ -1,6 +1,6 @@
 // import { checkEmail } from '@/helper/checker'
 import {checkEmail} from '../helper/checker'
-import {createUser} from '../helper/apiHelper'
+import {createUser, getUserById} from '../helper/apiHelper'
 import {Request, Response} from 'express'
 import prisma from '../lib/prisma'
 export const getUsers = async (req: Request, res: Response) => {
@@ -41,5 +41,22 @@ export const signUp = async (req: Request, res: Response) => {
            message: 'Internal server error'
        })
    }
+}
+
+export const getMe = async (req: Request, res: Response) => {
+    try{
+        const id = res.locals.jwtPayload.userId;
+        const user = await getUserById(id)
+        if(!user){
+            return res.status(404).json({
+                message: 'User not found'
+            })
+        }
+        return res.status(200).json(user)
+    }catch (e) {
+        return res.status(500).json({
+            message: 'Internal server error'
+        })
+    }
 }
 

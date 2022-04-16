@@ -13,13 +13,13 @@ export const login = async (req: Request, res: Response) => {
         const result = await userLogin(email, password)
         if(result.status !== 200) {
             return res.status(result.status).json({
-                message: 'Invalid email or password'
+                message: result.message
             })
         }
-        const user = result.user
+        const token = result.token
+        res.setHeader('x-auth-token', token)
         return res.status(200).json({
             message: 'Login successful',
-            user
         })
     } catch (e) {
         res.status(500).json({

@@ -1,6 +1,8 @@
 import prisma from '../lib/prisma'
 import * as sgMail from "@sendgrid/mail";
 import * as md5 from 'md5';
+import * as jwt from "jsonwebtoken";
+
 export const getUserByEmail = async (email: string) => {
     const user = await prisma.user.findUnique({
         where: {
@@ -101,7 +103,11 @@ export const getUserById = async (id) => {
 }
 
 export const userLogin = async (email, password) => {
-    const userCredential = await getUserByEmail(email)
+    const userCredential = await prisma.userCredential.findUnique({
+        where: {
+            email
+        }
+    })
     if (!userCredential) {
         return{
             status:404,
@@ -120,11 +126,16 @@ export const userLogin = async (email, password) => {
             message: "Password is not correct"
         }
     }
-    const user = await getUserByEmail(email)
+    const user  = await getUserByEmail(email)
+    const token = jwt.sign(
+        { userId: user.id},
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+    );
     return {
         status:200,
         message: "User verified",
-        user
+        token
     }
 }
 
